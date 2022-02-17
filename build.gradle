@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+}
+
+group 'me.phqsh'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = "https://m2.chew.pro/releases" }
+    maven { url = 'https://m2.dv8tion.net/releases' }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+    implementation "net.dv8tion:JDA:4.4.0_350"
+    implementation "pw.chew:jda-chewtils:1.24.1"
+    implementation 'org.apache.commons:commons-lang3:3.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    archiveFileName = "discordcraft.jar"
+
+    manifest {
+        attributes( "Main-Class": "me.phqsh.minecraftbridge.Main",
+                'Implementation-Version': project.version )
+    }
+
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    from {
+        configurations
+                .runtimeClasspath
+                .findAll { !it.name.endsWith('pom') }
+                .collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

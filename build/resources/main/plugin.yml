@@ -1,0 +1,6 @@
+main: me.phqsh.minecraftbridge.DiscordifyMain
+name: Discordcraft
+version: '1.0'
+description: Bridge between Minecraft chat and Discord chat. Made for PDS SMP
+author: Fishy#4705
+api-version: 1.18
