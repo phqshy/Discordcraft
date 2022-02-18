@@ -30,15 +30,11 @@ public class DiscordifyMain extends JavaPlugin {
     public void onEnable() {
         Bukkit.getServer().getPluginManager().registerEvents(new onMinecraftChat(this), this);
 
-        FileConfiguration config = this.getConfig();
-        config.addDefault("pluginChannel", "none");
-        config.addDefault("botToken", "none");
-        config.addDefault("discordGuild", "none");
-        config.addDefault("embedFooter", "none");
-        config.addDefault("activityStatus", "none");
-        config.addDefault("botOwnerID", "670630054417399808");
-        config.options().copyDefaults(true);
-        saveConfig();
+        FileConfiguration config;
+        if (this.getConfig() == null){
+            this.saveDefaultConfig();
+        }
+        config = this.getConfig();
 
         try {
             memberCache = MemberCachePolicy.ALL;
@@ -52,7 +48,7 @@ public class DiscordifyMain extends JavaPlugin {
                 throw new IllegalArgumentException("You need to specify a discord guild in config.yml!");
             }
 
-            if (!(config.get("activityStatus").toString().equals("none"))){
+            if (!(config.get("activityStatus").toString() == null)){
                 client.setActivity(Activity.watching(config.get("activityStatus").toString()));
             }
 
@@ -72,6 +68,7 @@ public class DiscordifyMain extends JavaPlugin {
             getLogger().severe("There was a problem initializing the Discord bot, try restarting the server.");
             e.printStackTrace();
         } catch(Exception e) {
+            getLogger().severe("There was a problem initializing the Discord bot, check the config.yml file,");
 
         }
 
