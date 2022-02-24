@@ -1,9 +1,8 @@
 package me.phqsh.minecraftbridge;
 
-import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import me.phqsh.minecraftbridge.commands.DGetOnline;
-import me.phqsh.minecraftbridge.events.onMinecraftChat;
+import me.phqsh.minecraftbridge.events.MinecraftEvents;
 import me.phqsh.minecraftbridge.events.onDiscordChat;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -28,33 +27,32 @@ public class DiscordifyMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getServer().getPluginManager().registerEvents(new onMinecraftChat(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new MinecraftEvents(this), this);
 
+        this.saveDefaultConfig();
         FileConfiguration config;
-        if (this.getConfig() == null){
-            this.saveDefaultConfig();
-        }
+
         config = this.getConfig();
 
         try {
             memberCache = MemberCachePolicy.ALL;
-
             CommandClientBuilder client = new CommandClientBuilder()
-                    .setActivity(Activity.watching(config.get("activityStatus").toString()))
-                    .addSlashCommands(new DGetOnline(this))
-                    .setOwnerId(config.get("botOwnerID").toString());
+                        .addSlashCommands(new DGetOnline(this))
+                        .setOwnerId(config.getString("botOwnerID"));
 
-            if (config.get("discordGuild").toString().equals("none")){
+            if (config.getString("discordGuild").equals("none")){
                 throw new IllegalArgumentException("You need to specify a discord guild in config.yml!");
             }
 
-            if (!(config.get("activityStatus").toString() == null)){
-                client.setActivity(Activity.watching(config.get("activityStatus").toString()));
+            if (!(config.getString("activityStatus") == null)){
+                client.setActivity(Activity.watching(config.getString("activityStatus")));
+            } else {
+                client.setActivity(null);
             }
 
-            client.forceGuildOnly(config.get("discordGuild").toString());
+            client.forceGuildOnly(config.getString("discordGuild"));
 
-            jda = JDABuilder.createDefault(this.getConfig().getString("botToken"))
+            jda = JDABuilder.createDefault(config.getString("botToken"))
                     .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS)
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .setMemberCachePolicy(memberCache)
@@ -62,27 +60,26 @@ public class DiscordifyMain extends JavaPlugin {
                     .build();
 
             jda.awaitReady();
+
+            getLogger().fine("Plugin online");
+            channel = config.getString("pluginChannel");
+
+            MessageEmbed eb = new EmbedBuilder()
+                    .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
+                    .setDescription("Server started!")
+                    .setColor(new Color(0x4D79E3))
+                    .setFooter(getConfig().getString("embedFooter"))
+                    .build();
+
+            getLogger().info(channel);
+            DiscordifyMain.jda.getTextChannelById(channel).sendMessageEmbeds(eb).queue();
         } catch (LoginException e) {
             getLogger().severe("***WARNING!!! BOT TOKEN INVALID! EDIT THE CONFIG.YML TO FIX THIS.***");
+            this.setEnabled(false);
         } catch (InterruptedException e) {
             getLogger().severe("There was a problem initializing the Discord bot, try restarting the server.");
             e.printStackTrace();
-        } catch(Exception e) {
-            getLogger().severe("There was a problem initializing the Discord bot, check the config.yml file,");
-
         }
-
-        getLogger().fine("Plugin online");
-        channel = config.get("pluginChannel").toString();
-
-        MessageEmbed eb = new EmbedBuilder()
-                .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
-                .setDescription("Server started!")
-                .setColor(new Color(0x4D79E3))
-                .setFooter(getConfig().get("embedFooter").toString())
-                .build();
-
-        DiscordifyMain.jda.getTextChannelById(channel).sendMessageEmbeds(eb).queue();
     }
 
     @Override
@@ -91,7 +88,7 @@ public class DiscordifyMain extends JavaPlugin {
                 .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
                 .setDescription("Server closed.")
                 .setColor(new Color(0x4D79E3))
-                .setFooter(getConfig().get("embedFooter").toString())
+                .setFooter(getConfig().getString("embedFooter"))
                 .build();
 
         DiscordifyMain.jda.getTextChannelById(channel).sendMessageEmbeds(eb).queue();

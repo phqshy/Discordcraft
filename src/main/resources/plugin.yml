@@ -1,5 +1,6 @@
 main: me.phqsh.minecraftbridge.DiscordifyMain
 name: Discordcraft
-version: '1.0-STABLE'
+version: '1.1-STABLE'
 description: Bridge between Minecraft chat and Discord chat.
 author: Fishy#4705
+api-version: 1.18
