@@ -9,6 +9,7 @@ import me.phqsh.minecraftbridge.DiscordifyMain;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -20,19 +21,28 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.awt.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 public class MinecraftEvents implements Listener {
     private final String channel;
     private final JavaPlugin plugin;
+    private HashMap<Player, String> cachedMessages;
 
     public MinecraftEvents(JavaPlugin plugin){
         this.channel = plugin.getConfig().getString("pluginChannel");
         this.plugin = plugin;
+        this.cachedMessages = new HashMap();
     }
 
     @EventHandler
     public void onChat(AsyncChatEvent event){
-         MessageEmbed eb = new EmbedBuilder()
+        if (!cachedMessages.keySet().contains(event.getPlayer())) cachedMessages.put(event.getPlayer(), PaperComponents.plainTextSerializer().serialize(event.message()));
+        if (PaperComponents.plainTextSerializer().serialize(event.message()).startsWith(cachedMessages.get(event.getPlayer()))) {
+            event.setCancelled(true);
+            return;
+        }
+
+        MessageEmbed eb = new EmbedBuilder()
                  .setAuthor(event.getPlayer().getName(), null, "https://mc-heads.net/avatar/" + event.getPlayer().getName())
                  .setDescription(PaperComponents.plainTextSerializer().serialize(event.message()))
                  .setColor(new Color(0x4D79E3))

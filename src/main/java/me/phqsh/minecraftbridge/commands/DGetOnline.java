@@ -29,7 +29,7 @@ public class DGetOnline extends SlashCommand {
         }
 
         MessageEmbed eb = new EmbedBuilder()
-                .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
+                .setAuthor("System", null, "https://images-ext-1.discordapp.net/external/frbyI-322yUo52YdCakBWK1STEZcr6yrBFZa-uWr7fU/https/mc-heads.net/avatar/UncleJaym")
                 .addField("Online players", playerString, false)
                 .setColor(new Color(0x4D79E3))
                 .setFooter(this.plugin.getConfig().getString("embedFooter"))

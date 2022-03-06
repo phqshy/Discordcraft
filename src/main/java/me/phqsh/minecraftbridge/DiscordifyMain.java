@@ -65,7 +65,7 @@ public class DiscordifyMain extends JavaPlugin {
             channel = config.getString("pluginChannel");
 
             MessageEmbed eb = new EmbedBuilder()
-                    .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
+                    .setAuthor("System", null, "https://images-ext-1.discordapp.net/external/frbyI-322yUo52YdCakBWK1STEZcr6yrBFZa-uWr7fU/https/mc-heads.net/avatar/UncleJaym")
                     .setDescription("Server started!")
                     .setColor(new Color(0x4D79E3))
                     .setFooter(getConfig().getString("embedFooter"))
@@ -85,7 +85,7 @@ public class DiscordifyMain extends JavaPlugin {
     @Override
     public void onDisable() {
         MessageEmbed eb = new EmbedBuilder()
-                .setAuthor("System", null, "https://mc-heads.net/avatar/UncleJaym")
+                .setAuthor("System", null, "https://images-ext-1.discordapp.net/external/frbyI-322yUo52YdCakBWK1STEZcr6yrBFZa-uWr7fU/https/mc-heads.net/avatar/UncleJaym")
                 .setDescription("Server closed.")
                 .setColor(new Color(0x4D79E3))
                 .setFooter(getConfig().getString("embedFooter"))
